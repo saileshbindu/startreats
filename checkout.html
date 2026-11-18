@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Checkout | Star Treats</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<header class="site-header">
+<a class="brand" href="index.html"><img src="assets/star-treats-logo.jpg" alt="Star Treats logo"><span><strong>Star Treats</strong><small>A STAR IN EVERY BITE</small></span></a>
+<nav><a href="index.html">HOME</a><a href="products.html">SHOP</a><a href="reviews.html">REVIEWS</a><a href="contact.html">CONTACT</a><a href="admin.html">ADMIN</a></nav>
+</header>
+<main class="checkout-page wrap">
+<form id="checkout-form" class="checkout-layout page-checkout">
+<section class="checkout-form">
+<h2>Checkout</h2>
+<label for="quantity">QUANTITY</label><div class="quantity"><button type="button" id="minus">−</button><strong id="qty">1</strong><button type="button" id="plus">+</button></div>
+<label for="delivery">DELIVERY DATE</label><small class="hint">Pre-orders ship fresh — pick a date at least 1 day away.</small><input id="delivery" type="date" required>
+<div class="two-fields"><div><label for="name">FULL NAME</label><input id="name" required placeholder="Your full name"></div><div><label for="phone">PHONE (10-DIGIT)</label><input id="phone" required inputmode="numeric" pattern="[0-9]{10}" placeholder="9876543210"></div></div>
+<label for="address">DELIVERY ADDRESS (WITH PINCODE)</label><textarea id="address" required placeholder="House no, street, city, pincode"></textarea>
+<label for="notes">NOTES (OPTIONAL)</label><textarea id="notes" placeholder="Landmark or gifting note"></textarea>
+<label>PAYMENT METHOD</label><div class="payment-options"><label><input type="radio" name="payment" value="Cash on Delivery" checked><span><b>Cash on Delivery</b><small>Pay cash when it arrives</small></span></label><label class="disabled"><input type="radio" disabled><span><b>Pay Online (Razorpay)</b><small>Not configured yet</small></span></label></div>
+<button class="btn submit-btn" type="submit">Confirm &amp; Place Pre-Order · <span id="total-button">₹350</span></button>
+<p class="hint">Your order is sent to the Star Treats server for WhatsApp notification.</p>
+</section>
+<aside class="order-summary" id="summary"></aside>
+</form>
+</main>
+<script>
+const catalog={
+ ragi:{name:'Ragi Almond Cookies',price:300,img:'assets/ragi-almond.jpg',desc:'Handcrafted with organic finger millet (ragi), crunchy roasted almonds, and pure cow ghee. Zero refined sugar.'},
+ jowar:{name:'Jowar Coconut Cookies',price:260,img:'assets/jowar-coconut.jpg',desc:'Light, melt-in-the-mouth sorghum cookies infused with toasted organic coconut flakes.'},
+ wheat:{name:'Wheat Butter Cookies',price:240,img:'assets/wheat-butter.jpg',desc:'Traditional stone-ground whole wheat baked with slow-churned farm butter and raw cane sugar.'},
+ bajra:{name:'Bajra Mixed Nuts Cookies',price:290,img:'assets/bajra-mixed-nuts.jpg',desc:'Hearty pearl millet packed with cashews, pistachios, almonds and cardamom.'}
+};
+const params=new URLSearchParams(location.search);
+let savedProducts=[];try{savedProducts=JSON.parse(localStorage.getItem('st-products')||'[]')}catch{}
+const savedProduct=savedProducts.find(p=>p.id===params.get('product'));
+const product=savedProduct||catalog[params.get('product')]||catalog.ragi;
+let quantity=1;const money=n=>'₹'+n.toLocaleString('en-IN');
+function draw(){document.querySelector('#qty').textContent=quantity;let subtotal=product.price*quantity,total=subtotal+50;document.querySelector('#total-button').textContent=money(total);document.querySelector('#summary').innerHTML=`<img src="${product.img}" alt="${product.name}"><h3>${product.name}</h3><small>250g (12–14 pcs)</small><p>${product.desc}</p><hr><div class="summary-line"><span>Price</span><b>${money(product.price)}</b></div><div class="summary-line"><span>Quantity</span><b>× ${quantity}</b></div><div class="summary-line"><span>Products</span><b>${money(subtotal)}</b></div><div class="summary-line"><span>Shipping charges</span><b>₹50</b></div><div class="summary-line total"><span>Total</span><b>${money(total)}</b></div>`}
+document.querySelector('#minus').onclick=()=>{quantity=Math.max(1,quantity-1);draw()};document.querySelector('#plus').onclick=()=>{quantity++;draw()};
+const date=document.querySelector('#delivery');date.min=new Date(Date.now()+86400000).toISOString().slice(0,10);date.value=date.min;
+document.querySelector('#checkout-form').onsubmit=async e=>{
+ e.preventDefault();
+ const phone=document.querySelector('#phone').value.trim();
+ if(!/^[0-9]{10}$/.test(phone)){alert('Enter a valid 10-digit phone number');return}
+ const subtotal=product.price*quantity,shipping=50,total=subtotal+shipping;
+ const orderId='ST-'+Date.now().toString().slice(-6);
+ const deliveryDate=new Date(date.value+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+ const order={
+   orderId,
+   customer:document.querySelector('#name').value.trim(),
+   customerPhone:phone,
+   address:document.querySelector('#address').value.trim(),
+   notes:document.querySelector('#notes').value.trim(),
+   deliveryDate,
+   product:product.name,
+   productId:params.get('product')||'ragi',
+   quantity,
+   unitPrice:product.price,
+   subtotal,
+   shipping,
+   total,
+   payment:'Cash on Delivery'
+ };
+ const submit=document.querySelector('.submit-btn');
+ submit.disabled=true;submit.textContent='Submitting order…';
+ try{
+   // Replace this value with the same checkout_api_key configured in api/config.php.
+   const response=await fetch('api/send-order.php',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({...order,apiKey:'REPLACE_WITH_A_LONG_RANDOM_SECRET'})
+   });
+   const result=await response.json();
+   if(!response.ok||!result.ok)throw new Error(result.error||'Order notification failed.');
+   alert('Thank you! Your order '+orderId+' has been submitted. Star Treats has been notified on WhatsApp.');
+   location.href='index.html';
+ }catch(err){
+   alert('We could not submit your order: '+err.message+'\\nPlease contact Star Treats on WhatsApp at +91 90329 78866.');
+   submit.disabled=false;submit.innerHTML='Confirm &amp; Place Pre-Order · <span id="total-button">'+money(total)+'</span>';
+ }
+};
+draw();
+</script></body></html>

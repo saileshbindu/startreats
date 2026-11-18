@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#faf7f2">
+  <title>Star Treats | A Star in Every Bite</title>
+  <meta name="description" content="Homemade millet cookies baked fresh to order by Star Treats.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+<a class="brand" href="index.html"><img src="assets/startreatLogo.png" alt="Star Treats logo"><span><strong>Star Treats</strong><small>A STAR IN EVERY BITE</small></span></a>
+<nav><a href="index.html">HOME</a><a href="products.html">SHOP</a><a href="reviews.html">REVIEWS</a><a href="contact.html">CONTACT</a><a href="admin.html">ADMIN</a></nav>
+</header>
+
+  <main id="home">
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <span class="eyebrow pill">● &nbsp; FRESHLY BAKED TO ORDER</span>
+        <h1>Homemade cookies,<br><em>rooted in tradition.</em></h1>
+        <p>Four honest millet cookies baked in small batches with cow ghee, jaggery and no refined sugar. Pre-order today, we bake fresh and deliver in 1–2 days.</p>
+        <div class="actions"><a class="btn" href="products.html">Shop Fresh Cookies <b>→</b></a><a class="btn btn-light" href="reviews.html">▤ &nbsp; Read Reviews</a></div>
+      </div>
+      <div class="hero-visual">
+        <img src="assets/hero-cookies.jpg" alt="Freshly baked homemade cookies">
+        <div class="rating-float"><strong>★★★★★ &nbsp; 4.9 / 5</strong><small>“Tastes like home — my toddler's<br>new favourite snack.”</small></div>
+      </div>
+    </section>
+
+    <section class="benefits wrap">
+      <article><span>🌾</span><div><b>100% Whole Millets</b><small>Ragi, Jowar, Bajra</small></div></article>
+      <article><span>♨</span><div><b>Pure Cow Ghee</b><small>Slow-baked daily</small></div></article>
+      <article><span>♢</span><div><b>Zero Preservatives</b><small>Only real ingredients</small></div></article>
+      <article><span>♡</span><div><b>Homemade with Love</b><small>Small-batch freshness</small></div></article>
+    </section>
+
+    <section class="collection section" id="collection">
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">THE COLLECTION</span><h2>Four cookies. Four millets. One honest recipe.</h2></div><p>Pick your favourite, choose a delivery date, we'll bake it fresh.</p></div>
+        <div class="product-grid" id="products"></div>
+      </div>
+    </section>
+
+    <section class="reviews section" id="reviews">
+      <div class="wrap">
+        <div class="section-head"><div><span class="eyebrow">LOVE FROM OUR CUSTOMERS</span><h2>Real reviews, real crumbs.</h2></div><button class="btn" id="review-open">Write a Review</button></div>
+        <div class="review-grid" id="review-list">
+          <article class="review-card"><div class="stars">★★★★★</div><p>“Tastes like home — my toddler's new favourite snack.”</p><b>Happy customer</b></article>
+          <article class="review-card"><div class="stars">★★★★★</div><p>“Fresh, delicious and not overly sweet. Loved the millet flavour.”</p><b>Cookie lover</b></article>
+          <article class="review-card"><div class="stars">★★★★★</div><p>“You can really taste the homemade goodness. Will order again!”</p><b>Regular customer</b></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact section" id="contact">
+      <div class="wrap contact-grid">
+        <div><span class="eyebrow">CONTACT US</span><h2>Got a question or a<br><em>custom gifting idea?</em></h2><p>Message us on WhatsApp for quick replies, or follow and DM us on Instagram.</p></div>
+        <div class="contact-links">
+          <a href="https://wa.me/919032978866" target="_blank" rel="noopener"><span class="contact-icon whatsapp">◉</span><span><small>WHATSAPP</small><b>+91 90329 78866</b></span><i>↗</i></a>
+          <a href="https://www.instagram.com/startreats_786/" target="_blank" rel="noopener"><span class="contact-icon insta">◎</span><span><small>INSTAGRAM</small><b>@startreats_786</b></span><i>↗</i></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap footer-inner"><a class="brand footer-brand" href="#home"><img src="assets/startreatLogo.png" alt=""><strong>Star Treats</strong></a><div><a href="#contact">Contact</a><span>·</span><a href="#reviews">Reviews</a></div><small>© 2026 Star Treats. Baked with care in India.</small></div></footer>
+
+  <dialog id="checkout-dialog" class="modal wide-modal">
+    <form id="checkout-form" class="checkout-layout">
+      <div class="checkout-form">
+        <button type="button" class="modal-close" data-close>×</button>
+        <h2>Checkout</h2>
+        <input type="hidden" id="checkout-product">
+        <label>QUANTITY</label>
+        <div class="quantity"><button type="button" id="qty-minus">−</button><strong id="qty-value">1</strong><button type="button" id="qty-plus">+</button></div>
+        <label for="delivery-date">DELIVERY DATE</label><small class="hint">Pre-orders ship fresh — pick a date at least 1 day away.</small>
+        <input id="delivery-date" type="date" required>
+        <div class="two-fields"><div><label for="customer-name">FULL NAME</label><input id="customer-name" placeholder="Your full name" required></div><div><label for="customer-phone">PHONE (10-DIGIT)</label><input id="customer-phone" inputmode="numeric" pattern="[0-9]{10}" placeholder="9876543210" required></div></div>
+        <label for="customer-address">DELIVERY ADDRESS (WITH PINCODE)</label><textarea id="customer-address" placeholder="House no, street, city, pincode" required></textarea>
+        <label for="customer-notes">NOTES (OPTIONAL)</label><textarea id="customer-notes" placeholder="Landmark or gifting note"></textarea>
+        <label>PAYMENT METHOD</label>
+        <div class="payment-options"><label><input type="radio" name="payment" value="Cash on Delivery" checked><span><b>Cash on Delivery</b><small>Pay cash when it arrives</small></span></label><label class="disabled"><input type="radio" name="payment" value="Online (not configured)" disabled><span><b>Pay Online (Razorpay)</b><small>Not configured yet</small></span></label></div>
+        <button class="btn submit-btn" type="submit">Confirm &amp; Place Pre-Order · <span id="checkout-total">₹350</span></button>
+      </div>
+      <aside class="order-summary" id="order-summary"></aside>
+    </form>
+  </dialog>
+
+  <dialog id="review-dialog" class="modal">
+    <form id="review-form" class="simple-form">
+      <button type="button" class="modal-close" data-close>×</button><h2>Write a Review</h2>
+      <label>Your name</label><input id="review-name" required placeholder="Your name">
+      <label>Your rating</label><select id="review-rating"><option value="5">★★★★★ - Loved it</option><option value="4">★★★★ - Very good</option><option value="3">★★★ - Good</option></select>
+      <label>Your review</label><textarea id="review-text" required placeholder="Tell us what you thought..."></textarea>
+      <button class="btn submit-btn">Submit Review</button>
+    </form>
+  </dialog>
+
+  <dialog id="admin-dialog" class="modal admin-modal">
+    <div class="admin-shell">
+      <button type="button" class="modal-close" data-close>×</button>
+      <div id="admin-login" class="simple-form"><span class="eyebrow">OWNER ACCESS</span><h2>Admin sign in</h2><p>Manage orders, products and reviews.</p><label>Demo password</label><input id="admin-password" type="password" placeholder="Enter demo password"><small class="hint">Demo only: password is <b>startreats-demo</b>. This is not secure production authentication.</small><button class="btn submit-btn" id="admin-login-btn">Continue →</button></div>
+      <div id="admin-dashboard" hidden>
+        <span class="eyebrow">OWNER PORTAL</span><h2>Startreat admin</h2>
+        <div class="admin-tabs"><button data-tab="orders" class="active">Orders</button><button data-tab="products">Products</button><button data-tab="reviews">Reviews</button><button data-tab="messages">Messages</button><button data-tab="shipping">Shipping</button></div>
+        <div id="admin-content"></div>
+      </div>
+    </div>
+  </dialog>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

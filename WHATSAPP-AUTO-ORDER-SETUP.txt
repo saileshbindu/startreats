@@ -1,0 +1,81 @@
+STAR TREATS - AUTOMATIC WHATSAPP ORDER NOTIFICATION
+==================================================
+
+WHAT THIS PACKAGE DOES
+- Customer fills checkout and presses Confirm & Place Pre-Order.
+- checkout.html sends order details to api/send-order.php on your Hostinger website.
+- PHP calls Meta WhatsApp Cloud API and sends an approved template message to 919032978866.
+- The customer does NOT need to open WhatsApp or press Send.
+- The server attempts to save a copy of the order in api/orders.json.
+
+IMPORTANT
+This is the website integration code, not an activated WhatsApp account.
+It will NOT send messages until you complete the Meta setup below and add your credentials.
+Do not put your Meta access token in HTML/JavaScript or share it with anyone.
+
+FILES
+- checkout.html: updated checkout that calls the PHP endpoint
+- api/send-order.php: server-side WhatsApp API sender
+- api/config.example.php: configuration template
+- api/orders.json: basic order log
+- api/.htaccess: blocks public access to config and order log
+
+HOSTINGER UPLOAD
+1. Back up your current public_html folder.
+2. Upload the updated checkout.html to public_html/checkout.html.
+3. Upload the complete api folder to public_html/api/.
+4. In Hostinger File Manager, duplicate api/config.example.php and name the copy config.php.
+5. Edit api/config.php and enter:
+   - Meta access token
+   - WhatsApp Phone Number ID
+   - supported Graph API version for your Meta app
+   - destination number 919032978866
+   - template name star_treats_new_order
+   - a long random checkout_api_key
+6. Open checkout.html and find:
+   REPLACE_WITH_A_LONG_RANDOM_SECRET
+   Replace it with exactly the same secret used in api/config.php.
+7. Make sure the PHP cURL extension is enabled in Hostinger.
+8. Keep config.php and orders.json protected. Do not remove api/.htaccess.
+
+META WHATSAPP CLOUD API SETUP
+1. Go to https://developers.facebook.com/ and sign in with the Meta account that manages your business.
+2. Create/select a Meta app and add the WhatsApp product.
+3. Complete WhatsApp Business setup and add/verify your business phone number as required by Meta.
+4. In WhatsApp > API Setup, find the Phone Number ID and generate/configure an appropriate access token.
+5. Put the Phone Number ID and token in api/config.php.
+6. In WhatsApp Manager, create and submit an approved Utility template:
+   Name: star_treats_new_order
+   Language: English (en)
+   Body text (keep all 13 placeholders in this exact order):
+
+   New Star Treats order: {{1}}
+   Customer: {{2}}
+   Customer phone: {{3}}
+   Cookie: {{4}}
+   Quantity: {{5}}
+   Price per pack: {{6}}
+   Product amount: {{7}}
+   Delivery charge: {{8}}
+   Total: {{9}}
+   Payment: {{10}}
+   Delivery date: {{11}}
+   Delivery address: {{12}}
+   Customer note: {{13}}
+
+7. Wait for Meta to approve the template. The template name and language in config.php must exactly match the approved template.
+8. Ensure the destination number 919032978866 is eligible to receive the message (and is not blocked). For initial testing, use a number allowed by your Meta app/test setup.
+9. Confirm the Graph API version configured in config.php is still supported by Meta.
+
+TEST
+- Place a low-value test order on the live HTTPS website.
+- If an error appears, check the displayed message and Hostinger PHP error log.
+- A successful API response means Meta accepted the message request; delivery can still depend on WhatsApp account/template/recipient status.
+
+SECURITY / PRODUCTION NOTES
+- This starter endpoint uses a shared checkout key in browser code to reduce casual misuse. A key embedded in JavaScript is visible to visitors and is NOT strong authentication. Add server-side rate limiting, CAPTCHA/bot protection, input limits, CSRF/origin checks, and secure order storage before public production use.
+- For stronger security, use a server-side order session or CAPTCHA and rotate the shared key.
+- Protect backups and never expose config.php, access tokens, or order records.
+- The JSON order log is a lightweight starter, not a replacement for a database or a full admin order-management system.
+- Meta may charge according to its current WhatsApp Business Platform pricing and rules.
+- The code does not bypass Meta's template approval, opt-in, quality, or messaging policies.

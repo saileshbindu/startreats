@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin | Star Treats</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<header class="site-header"><a class="brand" href="index.html"><img src="assets/star-treats-logo.jpg" alt="Star Treats logo"><span><strong>Star Treats</strong><small>A STAR IN EVERY BITE</small></span></a><nav><a href="index.html">HOME</a><a href="products.html">SHOP</a><a href="reviews.html">REVIEWS</a><a href="contact.html">CONTACT</a></nav></header>
+<main class="admin-page wrap">
+<div class="admin-heading"><span class="eyebrow">OWNER ACCESS</span><h1>Startreat admin</h1><p>Manage orders, products, reviews and shipping.</p></div>
+<section id="login-panel" class="admin-login simple-form"><h2>Admin sign in</h2><label for="password">Demo password</label><input id="password" type="password" placeholder="Enter demo password"><small class="hint">Demo password: <b>startreats-demo</b>. This is browser-only demo access, not secure production authentication.</small><button class="btn submit-btn" id="login">Continue →</button></section>
+<section id="dashboard" hidden>
+<div class="admin-tabs"><button class="active" data-tab="orders">Orders</button><button data-tab="products">Products</button><button data-tab="reviews">Reviews</button><button data-tab="messages">Messages</button><button data-tab="shipping">Shipping</button></div>
+<div id="panel" class="admin-panel"></div>
+</section></main>
+<script>
+const defaults=[
+{id:'ragi',name:'Ragi Almond Cookies',tag:'Bestseller',category:'GLUTEN-RICH FIBER',desc:'Handcrafted with organic finger millet (ragi), crunchy roasted almonds, and pure cow ghee. Zero refined sugar.',price:300,image:'assets/ragi-almond.jpg',weight:'250g (12–14 pcs)',active:true},
+{id:'jowar',name:'Jowar Coconut Cookies',tag:'Fresh Batch',category:'100% SORGHUM',desc:'Light, melt-in-the-mouth sorghum cookies infused with toasted organic coconut flakes and natural sweetness.',price:260,image:'assets/jowar-coconut.jpg',weight:'250g (12–14 pcs)',active:true},
+{id:'wheat',name:'Wheat Butter Cookies',tag:'Classic Favorite',category:'WHOLE GRAIN',desc:'Traditional stone-ground whole wheat baked with slow-churned farm butter and raw cane sugar.',price:240,image:'assets/wheat-butter.jpg',weight:'250g (12–14 pcs)',active:true},
+{id:'bajra',name:'Bajra Mixed Nuts Cookies',tag:'Nutrient Dense',category:'PEARL MILLET POWER',desc:'Hearty pearl millet packed with cashews, pistachios, almonds, and green cardamom.',price:290,image:'assets/bajra-mixed-nuts.jpg',weight:'250g (12–14 pcs)',active:true}
+];
+const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}};
+const getProducts=()=>{let p=read('st-products');return p.length?p:defaults};
+const saveProducts=p=>localStorage.setItem('st-products',JSON.stringify(p));
+const money=n=>'₹'+Number(n).toLocaleString('en-IN');
+function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.querySelector('#login').onclick=()=>{if(document.querySelector('#password').value==='startreats-demo'){document.querySelector('#login-panel').hidden=true;document.querySelector('#dashboard').hidden=false;show('products')}else alert('Incorrect demo password')};
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+function show(tab){
+ document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+ const panel=document.querySelector('#panel'),orders=read('st-orders'),reviews=read('st-reviews');
+ if(tab==='products'){renderProductManager()}
+ else if(tab==='orders'){panel.innerHTML=orders.length?`<div class="table-scroll"><table class="admin-table"><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>ITEMS</th><th>DELIVERY</th><th>TOTAL</th><th>STATUS</th></tr></thead><tbody>${orders.map((o,i)=>`<tr><td>${safe(o.id)}</td><td>${safe(o.customer)}<br>${safe(o.phone)}<br>${safe(o.address)}</td><td>${safe(o.product)} × ${o.qty}</td><td>${safe(o.date)}</td><td>${money(o.total)}</td><td><select data-status="${i}"><option ${o.status==='pending'?'selected':''}>pending</option><option ${o.status==='confirmed'?'selected':''}>confirmed</option><option ${o.status==='baking'?'selected':''}>baking</option><option ${o.status==='shipped'?'selected':''}>shipped</option><option ${o.status==='delivered'?'selected':''}>delivered</option></select></td></tr>`).join('')}</tbody></table></div>`:'<p class="admin-content-note">No orders found in this browser. Demo orders are stored locally on the device where they were placed.</p>';panel.querySelectorAll('[data-status]').forEach(s=>s.onchange=()=>{orders[+s.dataset.status].status=s.value;localStorage.setItem('st-orders',JSON.stringify(orders));alert('Order status updated')})}
+ else if(tab==='reviews'){panel.innerHTML=reviews.length?reviews.map(r=>`<article class="review-card"><b>${safe(r.name)}</b> · ${'★'.repeat(r.rating)}<p>${safe(r.text)}</p></article>`).join(''):'<p class="admin-content-note">No reviews saved in this browser.</p>'}
+ else if(tab==='messages'){panel.innerHTML='<p class="admin-content-note">Customer enquiries currently use WhatsApp and Instagram. A shared inbox needs a backend connection.</p>'}
+ else {panel.innerHTML='<h2>Shipping settings</h2><p>Demo shipping charge: ₹50 per order. Pre-order lead time: at least 1 day.</p>'}
+}
+function renderProductManager(){
+ const panel=document.querySelector('#panel'),items=getProducts();
+ panel.innerHTML=`<div class="product-admin-head"><div><h2>Manage products</h2><p class="admin-content-note">Add products or edit existing products. Changes appear on the Shop page in this browser.</p></div><button class="btn" id="add-product">+ Add New Product</button></div>
+ <div class="table-scroll"><table class="admin-table"><thead><tr><th>PRODUCT</th><th>PRICE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${items.map(p=>`<tr><td><b>${safe(p.name)}</b><br><small>${safe(p.category||'')}</small></td><td>${money(p.price)}</td><td>${p.active===false?'Hidden':'Visible'}</td><td><button class="admin-action" data-edit="${safe(p.id)}">Edit</button> <button class="admin-action danger" data-delete="${safe(p.id)}">Delete</button></td></tr>`).join('')}</tbody></table></div>
+ <div id="product-editor"></div>`;
+ document.querySelector('#add-product').onclick=()=>editProduct(null);
+ panel.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editProduct(b.dataset.edit));
+ panel.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{if(confirm('Delete this product from the Shop page?')){saveProducts(getProducts().filter(p=>p.id!==b.dataset.delete));renderProductManager();}});
+}
+function editProduct(id){
+ const p=id?getProducts().find(x=>x.id===id):{id:'',name:'',tag:'New',category:'HOMEMADE',desc:'',price:0,image:'assets/ragi-almond.jpg',weight:'250g',active:true};
+ const ed=document.querySelector('#product-editor');
+ ed.innerHTML=`<form id="product-form" class="product-editor"><h3>${id?'Edit product':'Add new product'}</h3>
+ <div class="editor-grid"><div><label>Product name</label><input name="name" required value="${safe(p.name)}"></div><div><label>Price (₹)</label><input name="price" type="number" min="1" required value="${p.price}"></div>
+ <div><label>Badge</label><input name="tag" value="${safe(p.tag)}"></div><div><label>Category / subtitle</label><input name="category" value="${safe(p.category)}"></div>
+ <div><label>Pack size</label><input name="weight" value="${safe(p.weight||'250g')}"></div><div><label>Image path</label><input name="image" value="${safe(p.image)}"><small class="hint">Use an image already in assets/, e.g. assets/my-cookie.jpg</small></div>
+ <div class="full"><label>Description</label><textarea name="desc" required>${safe(p.desc)}</textarea></div>
+ <label class="active-check"><input type="checkbox" name="active" ${p.active===false?'':'checked'}> Show on Shop page</label></div>
+ <div class="editor-actions"><button type="button" class="btn btn-light" id="cancel-edit">Cancel</button><button class="btn" type="submit">Save Product</button></div></form>`;
+ document.querySelector('#cancel-edit').onclick=()=>ed.innerHTML='';
+ document.querySelector('#product-form').onsubmit=e=>{e.preventDefault();const fd=new FormData(e.target),items=getProducts();const item={id:id||('product-'+Date.now()),name:fd.get('name').trim(),price:Number(fd.get('price')),tag:fd.get('tag').trim(),category:fd.get('category').trim(),weight:fd.get('weight').trim(),image:fd.get('image').trim(),desc:fd.get('desc').trim(),active:fd.get('active')==='on'};const idx=items.findIndex(x=>x.id===item.id);if(idx>=0)items[idx]=item;else items.push(item);saveProducts(items);renderProductManager();alert('Product saved. Open the Shop page to see the change.')};
+}
+</script></body></html>
